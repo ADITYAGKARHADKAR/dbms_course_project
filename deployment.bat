@@ -1,10 +1,10 @@
 @echo off
-REM Change these variables to match your MySQL setup
+
 set MYSQL_PATH="C:\Program Files\MySQL\MySQL Server 8.0\bin\mysql.exe"
 set USER=root
 set PASSWORD=aditya
-set DATABASE=test
-REM First create the database if it does not exist
+set DATABASE=test1
+
 %MYSQL_PATH% -u %USER% -p%PASSWORD% -e "CREATE DATABASE IF NOT EXISTS %DATABASE%;"
 
 REM Run the SQL file
