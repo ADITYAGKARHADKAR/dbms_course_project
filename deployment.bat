@@ -3,22 +3,23 @@
 set MYSQL_PATH="C:\Program Files\MySQL\MySQL Server 8.0\bin\mysql.exe"
 set INI_FILE="D:\Aditya\Second year\DBMS\DBMS-IT\course_project\deployment.ini"
 
-:: Extract database name from ini file
+
 for /f "tokens=2 delims==" %%a in ('findstr /i "database=" %INI_FILE%') do set DBNAME=%%a
 
-:: Show the value for debugging
+
 echo I am here dbname=%DBNAME%
 
-:: Step 1: Create the database (connect to mysql system DB so it always exists)
+
 %MYSQL_PATH% --defaults-file=%INI_FILE% --database=mysql -e "CREATE DATABASE IF NOT EXISTS %DBNAME%;"
 
-:: Step 2: Run the SQL files (now database exists)
+
 %MYSQL_PATH% --defaults-file=%INI_FILE% %DBNAME% < "D:\Aditya\Second year\DBMS\DBMS-IT\course_project\drop_tables.sql"
 %MYSQL_PATH% --defaults-file=%INI_FILE% %DBNAME% < "D:\Aditya\Second year\DBMS\DBMS-IT\course_project\user.sql"
 %MYSQL_PATH% --defaults-file=%INI_FILE% %DBNAME% < "D:\Aditya\Second year\DBMS\DBMS-IT\course_project\item_type.sql"
 %MYSQL_PATH% --defaults-file=%INI_FILE% %DBNAME% < "D:\Aditya\Second year\DBMS\DBMS-IT\course_project\complaint.sql"
 %MYSQL_PATH% --defaults-file=%INI_FILE% %DBNAME% < "D:\Aditya\Second year\DBMS\DBMS-IT\course_project\item.sql"
 %MYSQL_PATH% --defaults-file=%INI_FILE% %DBNAME% < "D:\Aditya\Second year\DBMS\DBMS-IT\course_project\complaint_trigger.sql"
+%MYSQL_PATH% --defaults-file=%INI_FILE% %DBNAME% < "D:\Aditya\Second year\DBMS\DBMS-IT\course_project\item_trigger.sql"
 
 echo SQL script executed successfully.
 pause

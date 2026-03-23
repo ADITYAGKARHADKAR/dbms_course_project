@@ -3,6 +3,7 @@ CREATE TABLE item (
     item_type_id INT,
     complaint_id INT,
     status VARCHAR(10) NOT NULL,
+    status_change_date datetime,
     FOREIGN KEY (item_type_id) REFERENCES item_type(item_type_id),
     FOREIGN KEY (complaint_id) REFERENCES complaint(complaint_id),
     CONSTRAINT chk_item_status CHECK (status IN ('lost','found'))
