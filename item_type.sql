@@ -1,4 +1,3 @@
-
 CREATE TABLE item_type (
     item_type_id INT PRIMARY KEY,
     item_description VARCHAR(50) NOT NULL
