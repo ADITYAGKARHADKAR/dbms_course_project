@@ -15,8 +15,8 @@
       <li><a href="home.html" class="nav-link">Home</a></li>
       <li><a href="report.html" class="nav-link active">Report Item</a></li>
       <li><a href="browse.html" class="nav-link">Browse Items</a></li>
+      <li><a href="my-items.html" class="nav-link">My Items</a></li>
       <li><a href="track.html" class="nav-link">Track Request</a></li>
-      <li><a href="how-it-works.html" class="nav-link">How It Works</a></li>
     </ul>
     <button class="btn-login" onclick="window.location.href='login.html'">Login / Register</button>
   </nav>
@@ -33,12 +33,13 @@
       <div class="form-row">
         <div class="form-group">
           <label>Item Name *</label>
-          <input type="text" id="itemName" placeholder="e.g. Blue Backpack" />
+          <input type="text" id="itemName" placeholder="e.g. Blue Backpack" oninput="autoSuggestMatches()" />
           <span class="error" id="itemNameErr"></span>
+          <div id="liveMatches" class="live-matches hidden"></div>
         </div>
         <div class="form-group">
           <label>Category *</label>
-          <select id="category">
+          <select id="category" onchange="autoSuggestMatches()">
             <option value="">Select category</option>
             <option>Electronics</option>
             <option>Clothing</option>
@@ -57,7 +58,7 @@
       <div class="form-row">
         <div class="form-group">
           <label>Location *</label>
-          <input type="text" id="location" placeholder="e.g. Library, Block A" />
+          <input type="text" id="location" placeholder="e.g. Library, Block A" oninput="autoSuggestMatches()" />
           <span class="error" id="locationErr"></span>
         </div>
         <div class="form-group">

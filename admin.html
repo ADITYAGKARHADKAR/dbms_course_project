@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Panel - Lost & Found Portal</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="logo">🔍 Lost &amp; Found - Admin</div>
+    <ul class="nav-links">
+      <li><a href="admin.html" class="nav-link active">Dashboard</a></li>
+      <li><a href="browse.html" class="nav-link">Browse Items</a></li>
+      <li><a href="report.html" class="nav-link">Report Item</a></li>
+    </ul>
+    <button class="btn-login" onclick="window.location.href='admin.html'">Admin</button>
+  </nav>
+
+  <!-- Admin Dashboard -->
+  <section class="section">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+      <div>
+        <h2 class="section-title" style="margin: 0;">🛡️ Admin Dashboard</h2>
+        <p style="color: var(--muted); margin-top: 0.5rem;">Welcome, <strong id="adminName"></strong></p>
+      </div>
+      <button onclick="logout()" class="btn btn-outline" style="color: var(--lost); border-color: var(--lost);">
+        🚪 Logout
+      </button>
+    </div>
+
+    <!-- Admin Stats -->
+    <div class="user-stats">
+      <div class="stat-card">
+        <div class="stat-icon">📊</div>
+        <div class="stat-value" id="totalItems">0</div>
+        <div class="stat-label">Total Reports</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">❌</div>
+        <div class="stat-value" id="totalLost">0</div>
+        <div class="stat-label">Lost Items</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">✅</div>
+        <div class="stat-value" id="totalFound">0</div>
+        <div class="stat-label">Found Items</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">⏳</div>
+        <div class="stat-value" id="totalPending">0</div>
+        <div class="stat-label">Pending</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">🎉</div>
+        <div class="stat-value" id="totalResolved">0</div>
+        <div class="stat-label">Resolved</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">👥</div>
+        <div class="stat-value" id="totalUsers">0</div>
+        <div class="stat-label">Total Users</div>
+      </div>
+    </div>
+
+    <!-- Filter and Search -->
+    <div style="margin-top: 2rem;">
+      <div class="filter-bar">
+        <input type="text" id="searchInput" placeholder="Search items..." oninput="filterAdminItems()" />
+        <select id="filterCategory" onchange="filterAdminItems()">
+          <option value="">All Categories</option>
+          <option>Electronics</option>
+          <option>Clothing</option>
+          <option>Accessories</option>
+          <option>Documents</option>
+          <option>Keys</option>
+          <option>Phone</option>
+          <option>Jewellery</option>
+          <option>Camera</option>
+          <option>Money</option>
+          <option>Other</option>
+        </select>
+        <select id="filterType" onchange="filterAdminItems()">
+          <option value="">All Types</option>
+          <option value="lost">Lost</option>
+          <option value="found">Found</option>
+        </select>
+        <select id="filterStatus" onchange="filterAdminItems()">
+          <option value="">All Status</option>
+          <option value="pending">Pending</option>
+          <option value="resolved">Resolved</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- All Items -->
+    <div id="adminItemsGrid" class="items-grid" style="margin-top: 2rem;"></div>
+  </section>
+
+  <footer class="footer">
+    <p>© 2025 Lost &amp; Found Portal - Admin Panel</p>
+  </footer>
+
+  <script src="admin.js"></script>
+</body>
+</html>

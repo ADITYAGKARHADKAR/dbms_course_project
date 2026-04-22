@@ -277,6 +277,93 @@ app.get('/api/stats', async (req, res) => {
   }
 });
 
+// Get user count (admin only)
+app.get('/api/users/count', requireAuth, async (req, res) => {
+  try {
+    if (req.session.userRole !== 'admin') return res.status(403).json({ error: 'Admin access required' });
+    const [result] = await db.query('SELECT COUNT(*) as count FROM users');
+    res.json({ count: result[0].count });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch user count' });
+  }
+});
+
+// Get only user's items
+app.get('/api/items/my', requireAuth, async (req, res) => {
+  try {
+    const [items] = await db.query(
+      'SELECT * FROM v_item_details WHERE user_email = ? ORDER BY item_date DESC',
+      [req.session.userEmail]
+    );
+    
+    const formatted = items.map(item => ({
+      item_id: item.item_id,
+      tracking_id: item.tracking_id,
+      item_type: item.status,
+      item_name: item.item_name,
+      category: item.category,
+      location: item.location,
+      item_date: item.item_date,
+      description: item.description,
+      contact_email: item.contact_email,
+      status: item.complaint_status === 'open' ? 'pending' : 'resolved'
+    }));
+    
+    res.json(formatted);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to fetch items' });
+  }
+});
+
+// Delete item
+app.delete('/api/items/:trackingId', requireAuth, async (req, res) => {
+  try {
+    // Get item to check ownership
+    const [items] = await db.query('SELECT * FROM v_item_details WHERE tracking_id = ?', [req.params.trackingId]);
+    if (!items.length) return res.status(404).json({ error: 'Item not found' });
+    
+    const item = items[0];
+    
+    // Check if user owns the item or is admin
+    if (req.session.userEmail !== item.user_email && req.session.userRole !== 'admin') {
+      return res.status(403).json({ error: 'Not authorized to delete this item' });
+    }
+    
+    // Delete item (cascade will delete complaint)
+    await db.query('DELETE FROM item WHERE tracking_id = ?', [req.params.trackingId]);
+    res.json({ success: true, message: 'Item deleted' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to delete item' });
+  }
+});
+
+// Update item status by tracking ID
+app.patch('/api/items/:trackingId/status', requireAuth, async (req, res) => {
+  try {
+    if (req.session.userRole !== 'admin') return res.status(403).json({ error: 'Admin access required' });
+    
+    const { status } = req.body;
+    
+    // Get item
+    const [items] = await db.query('SELECT item_id FROM item WHERE tracking_id = ?', [req.params.trackingId]);
+    if (!items.length) return res.status(404).json({ error: 'Item not found' });
+    
+    // Update based on status
+    if (status === 'resolved') {
+      await db.query('UPDATE item SET status = ? WHERE tracking_id = ?', ['found', req.params.trackingId]);
+    } else if (status === 'pending') {
+      await db.query('UPDATE item SET status = ? WHERE tracking_id = ?', ['lost', req.params.trackingId]);
+    }
+    
+    res.json({ success: true, message: 'Status updated' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to update status' });
+  }
+});
+
 // Start server
 app.listen(PORT, () => {
   console.log(`🚀 Server running on http://localhost:${PORT}`);

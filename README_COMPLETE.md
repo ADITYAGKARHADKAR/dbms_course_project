@@ -420,3 +420,6 @@ This project demonstrates practical implementation of:
 **Course:** Database Management Systems  
 **Institution:** [Your Institution Name]  
 **Year:** 2025
+Email:    admin@portal.com
+Password: admin123
+Role:     admin

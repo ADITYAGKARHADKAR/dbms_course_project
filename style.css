@@ -112,6 +112,12 @@ body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--
 .match-card:hover { transform: translateX(4px); }
 .match-info h4 { font-size: .95rem; margin-bottom: .3rem; }
 .match-info .meta { font-size: .8rem; color: var(--muted); margin-bottom: .15rem; }
+.match-info .btn-contact {
+  margin-top: .5rem; background: #16a34a; color: #fff; border: none;
+  padding: .4rem .8rem; border-radius: 6px; cursor: pointer; font-size: .8rem;
+  font-weight: 600; transition: background .2s;
+}
+.match-info .btn-contact:hover { background: #15803d; }
 .match-score {
   background: var(--primary); color: #fff; padding: .3rem .7rem;
   border-radius: 50px; font-size: .75rem; font-weight: 700;
@@ -192,6 +198,18 @@ body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--
 /* Utility */
 .hidden { display: none !important; }
 
+/* Live Matches */
+.live-matches {
+  position: relative;
+  z-index: 10;
+  animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
 /* Auth Container */
 .auth-container {
   max-width: 450px; margin: 0 auto; background: var(--card);
@@ -211,6 +229,19 @@ body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--
 .feature-icon { font-size: 3rem; margin-bottom: 1rem; }
 .feature-card h3 { font-size: 1.2rem; margin-bottom: .5rem; color: var(--primary); }
 .feature-card p { color: var(--muted); font-size: .9rem; line-height: 1.6; }
+
+/* User Stats */
+.user-stats {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1rem; margin-top: 1.5rem;
+}
+.stat-card {
+  background: var(--card); padding: 1.5rem; border-radius: var(--radius);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.07); text-align: center;
+}
+.stat-card .stat-icon { font-size: 2rem; margin-bottom: 0.5rem; }
+.stat-card .stat-value { font-size: 2rem; font-weight: 700; color: var(--primary); }
+.stat-card .stat-label { font-size: 0.85rem; color: var(--muted); margin-top: 0.3rem; }
 
 /* Footer */
 .footer { text-align: center; padding: 1.5rem; background: #1e293b; color: #94a3b8; font-size: .85rem; }
