@@ -12,9 +12,9 @@ DROP TABLE IF EXISTS complaint;
 DROP TABLE IF EXISTS item_type;
 DROP TABLE IF EXISTS users;
 
--- ============================================
+
 -- ORIGINAL STRUCTURE (from GitHub repo)
--- ============================================
+
 
 -- Users Table (Original)
 CREATE TABLE users (
@@ -66,9 +66,9 @@ CREATE TABLE item (
     INDEX idx_status (status)
 );
 
--- ============================================
+
 -- ENHANCED FEATURES
--- ============================================
+
 
 -- Claims Table (for claiming items)
 CREATE TABLE claims (
@@ -84,9 +84,9 @@ CREATE TABLE claims (
     INDEX idx_claim_status (claim_status)
 );
 
--- ============================================
+
 -- TRIGGERS (from original repo)
--- ============================================
+
 
 -- Trigger: Auto-update status_change_date when item status changes
 DELIMITER //
@@ -115,9 +115,9 @@ BEGIN
 END//
 DELIMITER ;
 
--- ============================================
+
 -- SAMPLE DATA
--- ============================================
+
 
 -- Insert sample users
 INSERT INTO users (user_name, phone_no, email, password_hash, role) VALUES
@@ -167,9 +167,9 @@ INSERT INTO item (item_type_id, complaint_id, status, tracking_id) VALUES
 (10, 9, 'found', 'LF-1009'), -- Umbrella (Other)
 (10, 10, 'lost', 'LF-1010'); -- Water Bottle (Other)
 
--- ============================================
+
 -- VIEWS FOR EASY QUERYING
--- ============================================
+
 
 -- View: Complete item details with user and type info
 CREATE OR REPLACE VIEW v_item_details AS
@@ -193,9 +193,9 @@ JOIN item_type it ON i.item_type_id = it.item_type_id
 JOIN complaint c ON i.complaint_id = c.complaint_id
 LEFT JOIN users u ON c.user_id = u.user_id;
 
--- ============================================
+
 -- STORED PROCEDURES
--- ============================================
+
 
 -- Procedure: Find matching items
 DELIMITER //
@@ -243,9 +243,9 @@ BEGIN
 END//
 DELIMITER ;
 
--- ============================================
+
 -- INDEXES FOR PERFORMANCE
--- ============================================
+
 
 CREATE INDEX idx_complaint_date ON complaint(complaint_date);
 CREATE INDEX idx_complaint_location ON complaint(location);

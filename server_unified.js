@@ -2,6 +2,7 @@ const express = require('express');
 const session = require('express-session');
 const bcrypt = require('bcryptjs');
 const cors = require('cors');
+const nodemailer = require('nodemailer');
 const db = require('./db');
 require('dotenv').config();
 
@@ -149,6 +150,7 @@ app.get('/api/items/track/:trackingId', async (req, res) => {
     
     const item = items[0];
     const formatted = {
+      item_id: item.item_id,
       tracking_id: item.tracking_id,
       item_name: item.item_name,
       item_type: item.status,
@@ -157,6 +159,7 @@ app.get('/api/items/track/:trackingId', async (req, res) => {
       item_date: item.item_date,
       status: item.complaint_status === 'open' ? 'pending' : 'resolved',
       contact_email: item.contact_email,
+      contact_name: item.user_name,
       description: item.description
     };
     
@@ -361,6 +364,79 @@ app.patch('/api/items/:trackingId/status', requireAuth, async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Failed to update status' });
+  }
+});
+
+// ── Email Contact Endpoint ──────────────────────────────────
+
+app.post('/api/contact/send', async (req, res) => {
+  try {
+    const { senderName, senderEmail, recipientEmail, itemName, message } = req.body;
+
+    if (!senderName || !senderEmail || !recipientEmail || !itemName) {
+      return res.status(400).json({ error: 'Missing required fields' });
+    }
+
+    // Create test email account (or use production credentials)
+    let transporter;
+    
+    if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
+      // Use production credentials (Gmail, Outlook, etc.)
+      transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+          user: process.env.EMAIL_USER,
+          pass: process.env.EMAIL_PASS
+        }
+      });
+    } else {
+      // For testing: use Ethereal test account
+      const testAccount = await nodemailer.createTestAccount();
+      transporter = nodemailer.createTransport({
+        host: 'smtp.ethereal.email',
+        port: 587,
+        secure: false,
+        auth: {
+          user: testAccount.user,
+          pass: testAccount.pass
+        }
+      });
+    }
+
+    // Email content
+    const mailOptions = {
+      from: process.env.EMAIL_USER || 'noreply@lostfound.local',
+      to: recipientEmail,
+      subject: `Lost & Found Portal: Interest in ${itemName}`,
+      html: `
+        <h2>New Contact from Lost & Found Portal</h2>
+        <p><strong>Item:</strong> ${itemName}</p>
+        <p><strong>From:</strong> ${senderName}</p>
+        <p><strong>Email:</strong> <a href="mailto:${senderEmail}">${senderEmail}</a></p>
+        <hr>
+        <p><strong>Message:</strong></p>
+        <p>${message || 'I am interested in the item you reported on the Lost & Found Portal.'}</p>
+        <hr>
+        <p><em>Please reply directly to ${senderEmail} to continue the conversation.</em></p>
+        <p><small>This is an automated message from the Lost & Found Portal.</small></p>
+      `
+    };
+
+    // Send email
+    const info = await transporter.sendMail(mailOptions);
+
+    // For test emails, provide preview URL
+    const previewURL = nodemailer.getTestMessageUrl(info);
+    console.log(`📧 Test email sent. Preview: ${previewURL}`);
+
+    res.json({ 
+      success: true, 
+      message: 'Email sent successfully!',
+      previewUrl: previewURL // Include preview URL for test emails
+    });
+  } catch (err) {
+    console.error('Email error:', err);
+    res.status(500).json({ error: 'Failed to send email. Please try again later.' });
   }
 });
 

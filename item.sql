@@ -1,7 +1,7 @@
 CREATE TABLE item (
     item_id INT PRIMARY KEY,
     item_type_id INT,
-    complaint_id INT UNIQUE,  -- 🔥 MAIN CHANGE
+    complaint_id INT UNIQUE,  -- MAIN CHANGE
     status VARCHAR(10) NOT NULL,
     status_change_date DATETIME,
     FOREIGN KEY (item_type_id) REFERENCES item_type(item_type_id),
