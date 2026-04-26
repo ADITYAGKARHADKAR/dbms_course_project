@@ -10,16 +10,28 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Middleware
-app.use(cors({ origin: true, credentials: true }));
+app.use(cors({
+  origin: process.env.NODE_ENV === 'production'
+    ? process.env.FRONTEND_URL || true
+    : true,
+  credentials: true
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static('.'));
+app.set('trust proxy', 1);
 app.use(session({
   secret: process.env.SESSION_SECRET,
   resave: false,
   saveUninitialized: false,
-  cookie: { secure: false, maxAge: 24 * 60 * 60 * 1000 }
+  cookie: {
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+    maxAge: 24 * 60 * 60 * 1000
+  }
 }));
+
+app.get('/health', (req, res) => res.json({ status: 'ok' }));
 
 // Redirect root to home page
 app.get('/', (req, res) => {
@@ -364,6 +376,45 @@ app.patch('/api/items/:trackingId/status', requireAuth, async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Failed to update status' });
+  }
+});
+
+// Resolve match endpoint
+app.post('/api/items/resolve', requireAuth, async (req, res) => {
+  try {
+    const { myTrackingId, matchTrackingId } = req.body;
+    if (!myTrackingId || !matchTrackingId) return res.status(400).json({ error: 'Missing tracking IDs' });
+
+    const [myItemRows] = await db.query(
+      'SELECT i.item_id, c.user_id FROM item i JOIN complaint c ON i.complaint_id = c.complaint_id WHERE i.tracking_id = ?',
+      [myTrackingId]
+    );
+    const [matchItemRows] = await db.query(
+      'SELECT i.item_id, c.user_id FROM item i JOIN complaint c ON i.complaint_id = c.complaint_id WHERE i.tracking_id = ?',
+      [matchTrackingId]
+    );
+    if (!myItemRows.length || !matchItemRows.length) return res.status(404).json({ error: 'Item not found' });
+
+    await db.query(`CREATE TABLE IF NOT EXISTS match_resolutions (
+      match_id VARCHAR(255) NOT NULL,
+      user_id INT NOT NULL,
+      resolved_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      PRIMARY KEY (match_id, user_id)
+    )`);
+
+    const matchId = [myTrackingId, matchTrackingId].sort().join('_');
+    await db.query('INSERT IGNORE INTO match_resolutions (match_id, user_id) VALUES (?, ?)', [matchId, req.session.userId]);
+
+    const [resolves] = await db.query('SELECT COUNT(*) as cnt FROM match_resolutions WHERE match_id = ?', [matchId]);
+    if (resolves[0].cnt >= 2) {
+      await db.query('UPDATE item SET status = "found" WHERE tracking_id IN (?, ?)', [myTrackingId, matchTrackingId]);
+      await db.query('UPDATE complaint SET complaint_status = "closed" WHERE complaint_id IN (SELECT complaint_id FROM item WHERE tracking_id IN (?, ?))', [myTrackingId, matchTrackingId]);
+      return res.json({ success: true, message: 'Both users resolved! Item marked as returned.' });
+    }
+    res.json({ success: true, message: 'Marked as resolved. Waiting for other user.' });
+  } catch (err) {
+    console.error('Resolve error:', err.message);
+    res.status(500).json({ error: err.message || 'Failed to mark as resolved' });
   }
 });
 

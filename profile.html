@@ -4,19 +4,22 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>My Dashboard - Lost & Found Portal</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
   <!-- Navbar -->
   <nav class="navbar">
-    <div class="logo">🔍 Lost &amp; Found</div>
+    <div class="logo"><i class="fas fa-magnifying-glass"></i> Lost &amp; Found</div>
     <ul class="nav-links">
       <li><a href="home.html" class="nav-link">Home</a></li>
       <li><a href="report.html" class="nav-link">Report Item</a></li>
       <li><a href="browse.html" class="nav-link">Browse Items</a></li>
+      <li><a href="my-items.html" class="nav-link">My Items</a></li>
       <li><a href="track.html" class="nav-link">Track Request</a></li>
       <li><a href="how-it-works.html" class="nav-link">How It Works</a></li>
+      <li><a href="about.html" class="nav-link">About</a></li>
     </ul>
     <button class="btn-login" onclick="window.location.href='profile.html'">Profile</button>
   </nav>
@@ -29,29 +32,29 @@
         <p style="color: var(--muted); margin-top: 0.5rem;">Welcome, <strong id="userName"></strong></p>
       </div>
       <button onclick="logout()" class="btn btn-outline" style="color: var(--lost); border-color: var(--lost);">
-        🚪 Logout
+        <i class="fas fa-door-open"></i> Logout
       </button>
     </div>
 
     <!-- User Stats -->
     <div class="user-stats">
       <div class="stat-card">
-        <div class="stat-icon">📝</div>
+        <div class="stat-icon"><i class="fas fa-clipboard"></i></div>
         <div class="stat-value" id="myTotal">0</div>
         <div class="stat-label">My Reports</div>
       </div>
       <div class="stat-card">
-        <div class="stat-icon">❌</div>
+        <div class="stat-icon"><i class="fas fa-times-circle"></i></div>
         <div class="stat-value" id="myLost">0</div>
         <div class="stat-label">Lost Items</div>
       </div>
       <div class="stat-card">
-        <div class="stat-icon">✅</div>
+        <div class="stat-icon"><i class="fas fa-check-circle"></i></div>
         <div class="stat-value" id="myFound">0</div>
         <div class="stat-label">Found Items</div>
       </div>
       <div class="stat-card">
-        <div class="stat-icon">⏳</div>
+        <div class="stat-icon"><i class="fas fa-hourglass-half"></i></div>
         <div class="stat-value" id="myPending">0</div>
         <div class="stat-label">Pending</div>
       </div>
@@ -69,7 +72,7 @@
     <!-- My Items -->
     <div id="myItemsGrid" class="items-grid" style="margin-top: 2rem;"></div>
     <div id="noItems" class="hidden" style="text-align: center; padding: 3rem; color: var(--muted);">
-      <p style="font-size: 1.2rem;">📭 No items found</p>
+      <p style="font-size: 1.2rem;"><i class="fas fa-inbox"></i> No items found</p>
       <p>You haven't reported any items yet.</p>
       <a href="report.html" class="btn btn-primary" style="margin-top: 1rem;">Report an Item</a>
     </div>

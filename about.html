@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>About - Lost & Found Portal</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .about-section {
+      background: white;
+      border-radius: 12px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    
+    .about-section h2 {
+      color: var(--primary);
+      margin-top: 0;
+      font-size: 1.75rem;
+      margin-bottom: 1rem;
+    }
+    
+    .about-section h3 {
+      color: #1f2937;
+      font-size: 1.25rem;
+      margin-top: 1.5rem;
+      margin-bottom: 1rem;
+    }
+    
+    .about-section p {
+      color: #4b5563;
+      line-height: 1.8;
+      font-size: 1rem;
+      margin-bottom: 1rem;
+    }
+    
+    .team-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+      margin-top: 1.5rem;
+    }
+    
+    .team-member {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 1.5rem;
+      border-radius: 8px;
+      text-align: center;
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .team-member:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+    }
+    
+    .team-member-icon {
+      font-size: 2.5rem;
+      margin-bottom: 0.5rem;
+    }
+    
+    .team-member-name {
+      font-weight: 600;
+      font-size: 1.1rem;
+      margin-top: 0.5rem;
+    }
+    
+    .guide-card {
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      color: white;
+      padding: 2rem;
+      border-radius: 12px;
+      text-align: center;
+      box-shadow: 0 4px 12px rgba(245, 87, 108, 0.3);
+      margin-top: 1.5rem;
+    }
+    
+    .guide-card h3 {
+      color: white;
+      margin-top: 0;
+      font-size: 1.5rem;
+    }
+    
+    .guide-card p {
+      color: rgba(255, 255, 255, 0.9);
+      margin-bottom: 0;
+      font-size: 1.1rem;
+    }
+    
+    .objective-card {
+      background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+      color: white;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(79, 172, 254, 0.3);
+      margin-top: 1.5rem;
+    }
+    
+    .objective-card p {
+      color: rgba(255, 255, 255, 0.9);
+      font-size: 1.1rem;
+      line-height: 1.8;
+      margin-bottom: 0;
+    }
+    
+    .highlight {
+      font-weight: 600;
+      color: #667eea;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="logo"><i class="fas fa-magnifying-glass"></i> Lost &amp; Found</div>
+    <ul class="nav-links">
+      <li><a href="home.html" class="nav-link">Home</a></li>
+      <li><a href="report.html" class="nav-link">Report Item</a></li>
+      <li><a href="browse.html" class="nav-link">Browse Items</a></li>
+      <li><a href="track.html" class="nav-link">Track Request</a></li>
+      <li><a href="how-it-works.html" class="nav-link">How It Works</a></li>
+      <li><a href="about.html" class="nav-link active">About</a></li>
+    </ul>
+    <button class="btn-login" onclick="window.location.href='login.html'">Login / Register</button>
+  </nav>
+
+  <!-- About Section -->
+  <section class="section">
+    <h1 style="text-align: center; color: var(--primary); margin-bottom: 3rem;"><i class="fas fa-book"></i> About This Project</h1>
+
+    <!-- Project Description -->
+    <div class="about-section">
+      <h2><i class="fas fa-bullseye"></i> The Lost & Found Management System</h2>
+      <p>
+        The <span class="highlight">Lost & Found Management System</span> is a web-based application designed to simplify the process of reporting, tracking, and recovering lost items. The system allows users to register, report lost or found items, and search for matching entries efficiently. By leveraging a structured database and automated matching logic, the platform helps connect users and improve the chances of recovering lost belongings.
+      </p>
+      <p>
+        The application is built using modern web technologies with a focus on usability, data integrity, and real-time interaction. It incorporates features such as secure user authentication, item categorization, tracking IDs, and an intelligent matching system powered by database procedures and triggers.
+      </p>
+      <p>
+        This project demonstrates the practical implementation of <span class="highlight">DBMS concepts</span> including relational modeling, constraints, triggers, and query optimization, integrated with a backend server to deliver a complete end-to-end solution.
+      </p>
+    </div>
+
+    <!-- Key Features -->
+    <div class="about-section">
+      <h2><i class="fas fa-star"></i> Key Features</h2>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-top: 1.5rem;">
+        <div style="padding: 1rem; background: #f0f9ff; border-left: 4px solid #667eea; border-radius: 6px;">
+          <h4 style="color: #667eea; margin-top: 0;"><i class="fas fa-lock"></i> Secure Authentication</h4>
+          <p style="margin: 0; color: #4b5563; font-size: 0.95rem;">User registration and login with encrypted password storage</p>
+        </div>
+        <div style="padding: 1rem; background: #f0fdf4; border-left: 4px solid #16a34a; border-radius: 6px;">
+          <h4 style="color: #16a34a; margin-top: 0;"><i class="fas fa-mobile-alt"></i> WhatsApp Integration</h4>
+          <p style="margin: 0; color: #4b5563; font-size: 0.95rem;">Direct messaging with item owners via WhatsApp Web</p>
+        </div>
+        <div style="padding: 1rem; background: #fef3c7; border-left: 4px solid #f59e0b; border-radius: 6px;">
+          <h4 style="color: #d97706; margin-top: 0;"><i class="fas fa-search"></i> Smart Matching</h4>
+          <p style="margin: 0; color: #4b5563; font-size: 0.95rem;">Automatic item matching based on category, location, and date</p>
+        </div>
+        <div style="padding: 1rem; background: #fee2e2; border-left: 4px solid #dc2626; border-radius: 6px;">
+          <h4 style="color: #dc2626; margin-top: 0;"><i class="fas fa-tags"></i> Item Tracking</h4>
+          <p style="margin: 0; color: #4b5563; font-size: 0.95rem;">Unique tracking IDs for easy identification and status updates</p>
+        </div>
+        <div style="padding: 1rem; background: #f3e8ff; border-left: 4px solid #9333ea; border-radius: 6px;">
+          <h4 style="color: #9333ea; margin-top: 0;"><i class="fas fa-chart-bar"></i> Admin Dashboard</h4>
+          <p style="margin: 0; color: #4b5563; font-size: 0.95rem;">Comprehensive management and analytics for administrators</p>
+        </div>
+        <div style="padding: 1rem; background: #cffafe; border-left: 4px solid #06b6d4; border-radius: 6px;">
+          <h4 style="color: #0891b2; margin-top: 0;"><i class="fas fa-bolt"></i> Real-time Updates</h4>
+          <p style="margin: 0; color: #4b5563; font-size: 0.95rem;">Instant notifications and status synchronization</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Team Section -->
+    <div class="about-section">
+      <h2><i class="fas fa-code"></i> Project Team</h2>
+      <p>This project was developed by a dedicated team of students:</p>
+      <div class="team-grid">
+        <div class="team-member">
+          <div class="team-member-icon"><i class="fas fa-user"></i></div>
+          <div class="team-member-name">Atharva Lanke</div>
+        </div>
+        <div class="team-member">
+          <div class="team-member-icon"><i class="fas fa-user"></i></div>
+          <div class="team-member-name">Anuraj Lonkar</div>
+        </div>
+        <div class="team-member">
+          <div class="team-member-icon"><i class="fas fa-user"></i></div>
+          <div class="team-member-name">Aditya Karhadkar</div>
+        </div>
+        <div class="team-member">
+          <div class="team-member-icon"><i class="fas fa-user"></i></div>
+          <div class="team-member-name">Atharva Khairnar</div>
+        </div>
+        <div class="team-member">
+          <div class="team-member-icon"><i class="fas fa-user"></i></div>
+          <div class="team-member-name">Swaraj Langhe</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Project Guide Section -->
+    <div class="about-section">
+      <h2><i class="fas fa-graduation-cap"></i> Project Guide</h2>
+      <div class="guide-card">
+        <div class="team-member-icon" style="color: white; margin-bottom: 1rem;"><i class="fas fa-chalkboard-user"></i></div>
+        <h3>Aparna Sawant</h3>
+        <p>Dean of Information Technology</p>
+        <p>Guide & Mentor</p>
+      </div>
+    </div>
+
+    <!-- Objective Section -->
+    <div class="about-section">
+      <h2><i class="fas fa-bullseye"></i> Project Objective</h2>
+      <div class="objective-card">
+        <p>
+          The primary objective of this project is to provide a <span style="font-weight: 600;">reliable and user-friendly platform</span> that bridges the gap between lost and found items, while showcasing the effective use of database management systems in solving real-world problems.
+        </p>
+      </div>
+    </div>
+
+    <!-- Technology Stack -->
+    <div class="about-section">
+      <h2><i class="fas fa-tools"></i> Technology Stack</h2>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-top: 1.5rem;">
+        <div style="padding: 1.5rem; background: #f3f4f6; border-radius: 8px; text-align: center;">
+          <h4 style="color: #1f2937; margin-top: 0;">Frontend</h4>
+          <p style="margin: 0; font-size: 0.95rem; color: #4b5563;">HTML5, CSS3, JavaScript (ES6+)</p>
+        </div>
+        <div style="padding: 1.5rem; background: #f3f4f6; border-radius: 8px; text-align: center;">
+          <h4 style="color: #1f2937; margin-top: 0;">Backend</h4>
+          <p style="margin: 0; font-size: 0.95rem; color: #4b5563;">Node.js, Express.js</p>
+        </div>
+        <div style="padding: 1.5rem; background: #f3f4f6; border-radius: 8px; text-align: center;">
+          <h4 style="color: #1f2937; margin-top: 0;">Database</h4>
+          <p style="margin: 0; font-size: 0.95rem; color: #4b5563;">MySQL 8.0</p>
+        </div>
+        <div style="padding: 1.5rem; background: #f3f4f6; border-radius: 8px; text-align: center;">
+          <h4 style="color: #1f2937; margin-top: 0;">Security</h4>
+          <p style="margin: 0; font-size: 0.95rem; color: #4b5563;">bcryptjs, Express-Session</p>
+        </div>
+        <div style="padding: 1.5rem; background: #f3f4f6; border-radius: 8px; text-align: center;">
+          <h4 style="color: #1f2937; margin-top: 0;">Integration</h4>
+          <p style="margin: 0; font-size: 0.95rem; color: #4b5563;">WhatsApp Web API</p>
+        </div>
+        <div style="padding: 1.5rem; background: #f3f4f6; border-radius: 8px; text-align: center;">
+          <h4 style="color: #1f2937; margin-top: 0;">Tools</h4>
+          <p style="margin: 0; font-size: 0.95rem; color: #4b5563;">Git, VS Code, Postman</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Contact Section -->
+    <div class="about-section" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; text-align: center;">
+      <h2 style="color: white; margin-bottom: 1rem;"><i class="fas fa-envelope"></i> Get in Touch</h2>
+      <p style="color: rgba(255,255,255,0.9); font-size: 1.1rem; margin-bottom: 0;">
+        Have questions or feedback about the Lost & Found Portal? We'd love to hear from you!
+      </p>
+      <p style="color: rgba(255,255,255,0.85); margin-top: 1.5rem; margin-bottom: 0;">
+        Contact us at: <span style="font-weight: 600;">admin@lostfoundportal.com</span>
+      </p>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <p>Build by Students of Vishwakarma Institute of Technology, Pune</p>
+  </footer>
+
+</body>
+</html>

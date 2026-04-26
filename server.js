@@ -141,20 +141,23 @@ app.get('/api/items/matches/:itemId', async (req, res) => {
     
     // Find potential matches: opposite type, same category, similar location/date
     const [matches] = await db.query(
-      `SELECT *, 
-        (CASE WHEN category = ? THEN 3 ELSE 0 END +
-         CASE WHEN location LIKE ? THEN 2 ELSE 0 END +
-         CASE WHEN ABS(DATEDIFF(item_date, ?)) <= 7 THEN 1 ELSE 0 END) as match_score
-       FROM items 
-       WHERE item_type = ? AND status = 'pending' AND item_id != ?
+      `SELECT i.*, 
+        u.full_name as user_name,
+        (CASE WHEN i.category = ? THEN 3 ELSE 0 END +
+         CASE WHEN i.location LIKE ? THEN 2 ELSE 0 END +
+         CASE WHEN ABS(DATEDIFF(i.item_date, ?)) <= 7 THEN 1 ELSE 0 END) as match_score
+       FROM items i
+       LEFT JOIN users u ON i.user_id = u.user_id
+       WHERE i.item_type = ? AND i.status = 'pending' AND i.item_id != ?
        HAVING match_score > 0
-       ORDER BY match_score DESC, created_at DESC
+       ORDER BY match_score DESC, i.created_at DESC
        LIMIT 10`,
       [item.category, `%${item.location}%`, item.item_date, oppositeType, item.item_id]
     );
     
     res.json(matches);
   } catch (err) {
+    console.error('Error fetching matches:', err);
     res.status(500).json({ error: 'Failed to find matches' });
   }
 });
@@ -162,8 +165,8 @@ app.get('/api/items/matches/:itemId', async (req, res) => {
 // Create item report with matching
 app.post('/api/items', async (req, res) => {
   try {
-    const { type, name, category, location, date, description, contactEmail, userName } = req.body;
-    if (!type || !name || !category || !location || !date || !contactEmail || !userName) {
+    const { type, name, category, location, date, description, contactPhone, userName } = req.body;
+    if (!type || !name || !category || !location || !date || !contactPhone || !userName) {
       return res.status(400).json({ error: 'All required fields must be provided' });
     }
     
@@ -177,8 +180,8 @@ app.post('/api/items', async (req, res) => {
     const trackingId = `LF-${nextId}`;
     
     const [result] = await db.query(
-      'INSERT INTO items (tracking_id, user_id, item_type, item_name, category, location, item_date, description, contact_email) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
-      [trackingId, req.session.userId || null, type, name, category, location, date, description || '', contactEmail]
+      'INSERT INTO items (tracking_id, user_id, item_type, item_name, category, location, item_date, description, contact_phone) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
+      [trackingId, req.session.userId || null, type, name, category, location, date, description || '', contactPhone]
     );
     
     // Find potential matches
@@ -216,6 +219,51 @@ app.patch('/api/items/:id/status', requireAuth, async (req, res) => {
     res.json({ success: true, message: 'Status updated' });
   } catch (err) {
     res.status(500).json({ error: 'Failed to update status' });
+  }
+});
+
+// Resolve matched items (mark both as resolved and pair them)
+app.post('/api/items/resolve-match', requireAuth, async (req, res) => {
+  try {
+    const { itemId, matchedItemId } = req.body;
+    
+    if (!itemId || !matchedItemId) {
+      return res.status(400).json({ error: 'Both item IDs are required' });
+    }
+    
+    // Verify that both items exist
+    const [items] = await db.query('SELECT * FROM items WHERE item_id IN (?, ?)', [itemId, matchedItemId]);
+    if (items.length !== 2) {
+      return res.status(404).json({ error: 'One or both items not found' });
+    }
+    
+    // Verify that items are opposite types (one lost, one found)
+    const types = items.map(item => item.item_type);
+    if (types[0] === types[1]) {
+      return res.status(400).json({ error: 'Items must be of opposite types (lost/found)' });
+    }
+    
+    // Update both items: set status to resolved and pair them
+    await db.query('UPDATE items SET status = ?, paired_item_id = ? WHERE item_id = ?', ['resolved', matchedItemId, itemId]);
+    await db.query('UPDATE items SET status = ?, paired_item_id = ? WHERE item_id = ?', ['resolved', itemId, matchedItemId]);
+    
+    // Get updated stats
+    const [resolved] = await db.query('SELECT COUNT(*) as count FROM items WHERE status = "resolved"');
+    const [pending] = await db.query('SELECT COUNT(*) as count FROM items WHERE status = "pending"');
+    const [total] = await db.query('SELECT COUNT(*) as count FROM items');
+    
+    res.json({
+      success: true,
+      message: 'Items marked as resolved successfully',
+      stats: {
+        total: total[0].count,
+        resolved: resolved[0].count,
+        pending: pending[0].count
+      }
+    });
+  } catch (err) {
+    console.error('Resolve match error:', err);
+    res.status(500).json({ error: 'Failed to resolve match' });
   }
 });
 

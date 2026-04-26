@@ -104,7 +104,7 @@ function renderAdminItems(items) {
       <p class="meta">📍 ${item.location}</p>
       <p class="meta">📅 ${item.item_date.split('T')[0]}</p>
       <p class="meta" style="margin-top:.4rem;font-size:.83rem">${item.description || 'No description'}</p>
-      <p class="meta">✉️ ${item.contact_email}</p>
+      <p class="meta">📱 ${item.contact_phone}</p>
       <p class="item-id">ID: ${item.tracking_id} · <span class="status-badge status-${item.status}">${item.status}</span></p>
       <div style="display: flex; gap: 0.5rem; margin-top: 0.5rem;">
         <button 

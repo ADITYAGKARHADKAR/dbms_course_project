@@ -107,7 +107,7 @@ function displayTrackingResult(item) {
             </div>
             <div>
               <span style="color: #6b7280; font-size: 0.875rem;">Contact</span>
-              <p style="color: #1f2937; font-weight: 600; margin: 0.25rem 0 0 0; word-break: break-all;">${item.contact_email}</p>
+              <p style="color: #1f2937; font-weight: 600; margin: 0.25rem 0 0 0; word-break: break-all;">${item.contact_phone}</p>
             </div>
           </div>
         </div>
@@ -223,11 +223,14 @@ function renderMatches(originalItem, matches) {
             <p style="margin: 1rem 0; padding: 0.75rem; background: #f9fafb; border-radius: 6px; color: #4b5563; font-size: 0.875rem; line-height: 1.5;">${match.description}</p>
           ` : ''}
           <div style="padding-top: 1rem; border-top: 1px solid #e5e7eb; display: flex; flex-direction: column; gap: 0.5rem; color: #6b7280; font-size: 0.875rem;">
-            <div><strong>Reporter:</strong> ${match.contact_name || match.user_name || 'Anonymous'}</div>
-            <div><strong>Email:</strong> <a href="mailto:${match.contact_email}" style="color: #3b82f6; text-decoration: none;">${match.contact_email}</a></div>
+            <div><strong>Reporter:</strong> ${match.user_name || 'Anonymous'}</div>
+            ${match.contact_email ? `<div><strong>Email:</strong> ${match.contact_email}</div>` : '<div><strong>Email:</strong> Not available</div>'}
             <div><strong>ID:</strong> <span style="font-family: monospace; background: #f3f4f6; padding: 0.25rem 0.5rem; border-radius: 4px;">${match.tracking_id}</span></div>
           </div>
-          <button onclick="contactUser('${match.contact_email}', '${match.item_name}')" style="width: 100%; margin-top: 1rem; background: #3b82f6; color: white; border: none; padding: 0.75rem; border-radius: 6px; cursor: pointer; font-weight: 600; transition: background 0.2s;" onmouseover="this.style.background='#1d4ed8'" onmouseout="this.style.background='#3b82f6'">✉️ Contact User</button>
+          <div style="display: flex; gap: 0.5rem; margin-top: 1rem;">
+            <button onclick="markResolved('${originalItem.tracking_id}', '${match.tracking_id}')" style="flex:1; background: #10b981; color: white; border: none; padding: 0.5rem 0.75rem; border-radius: 6px; cursor: pointer; font-weight: 600; transition: background 0.2s;" onmouseover="this.style.background='#059669'" onmouseout="this.style.background='#10b981'">✅ Resolved</button>
+            ${match.contact_email ? `<button onclick="contactUserViaEmail('${match.contact_email}', '${match.item_name}', '${match.tracking_id}')" style="flex:1; background: #3b82f6; color: white; border: none; padding: 0.5rem 0.75rem; border-radius: 6px; cursor: pointer; font-weight: 600; transition: background 0.2s;" onmouseover="this.style.background='#1d4ed8'" onmouseout="this.style.background='#3b82f6'">✉️ Contact via Email</button>` : `<button disabled style="flex:1; background: #ccc; color: #666; border: none; padding: 0.5rem 0.75rem; border-radius: 6px; cursor: not-allowed; font-weight: 600;">📧 Email Not Available</button>`}
+          </div>
         </div>
       `;
     });
@@ -249,43 +252,30 @@ function renderMatches(originalItem, matches) {
 }
 
 // Contact user
-async function contactUser(email, itemName) {
-  // Get sender info from session or prompt
+async function contactUserViaEmail(recipientEmail, itemName, trackingId) {
   const senderName = prompt('Enter your name:');
   if (!senderName) return;
 
-  const senderEmail = prompt('Enter your email:');
-  if (!senderEmail || !senderEmail.includes('@')) {
-    alert('Please enter a valid email address');
-    return;
-  }
+  const senderEmail = prompt('Enter your email address:');
+  if (!senderEmail) return;
 
-  const message = prompt(`Enter your message (optional):\n\nDefault: "I am interested in the ${itemName} you reported on the Lost & Found Portal."`);
+  const message = prompt(`Enter your message (optional):`) || '';
 
   try {
     const res = await fetch(`${API_URL}/contact/send`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        senderName,
-        senderEmail,
-        recipientEmail: email,
-        itemName,
-        message: message || `I am interested in the ${itemName} you reported on the Lost & Found Portal.`
-      })
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ senderName, senderEmail, recipientEmail, itemName, message })
     });
-
+    const data = await res.json();
     if (res.ok) {
-      showSuccessNotification(`✅ Email sent to ${email}! They will receive your contact information.`);
+      showSuccessNotification('Email sent successfully! The reporter will contact you back.');
     } else {
-      const error = await res.json();
-      alert(`Error: ${error.error || 'Failed to send email'}`);
+      showError(data.error || 'Failed to send email.');
     }
   } catch (err) {
-    console.error('Error:', err);
-    alert('Failed to send email. Please try again.');
+    showError('Failed to send email. Please try again.');
   }
 }
 
@@ -311,6 +301,30 @@ function showSuccessNotification(message) {
 }
 
 // Go home
+// Mark item as resolved (user action)
+async function markResolved(myTrackingId, matchTrackingId) {
+  try {
+    const res = await fetch(`${API_URL}/items/resolve`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ myTrackingId, matchTrackingId })
+    });
+    const data = await res.json();
+    if (res.status === 401) {
+      showError('Please login to mark items as resolved.');
+      setTimeout(() => window.location.href = 'login.html', 2000);
+      return;
+    }
+    if (res.ok) {
+      showSuccessNotification(data.message || 'Marked as resolved!');
+    } else {
+      showError(data.error || 'Failed to mark as resolved');
+    }
+  } catch (err) {
+    showError('Failed to mark as resolved. Please try again.');
+  }
+}
 function goHome() {
   window.location.href = 'home.html';
 }

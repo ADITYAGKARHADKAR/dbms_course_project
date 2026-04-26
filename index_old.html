@@ -4,13 +4,14 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Lost & Found Portal</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
   <!-- Navbar -->
   <nav class="navbar">
-    <div class="logo">🔍 Lost &amp; Found</div>
+    <div class="logo"><i class="fas fa-magnifying-glass"></i> Lost &amp; Found</div>
     <ul class="nav-links">
       <li><a href="#home" class="nav-link active">Home</a></li>
       <li><a href="#report" class="nav-link">Report Item</a></li>
@@ -98,7 +99,7 @@
       <button type="submit" class="btn btn-primary">Submit Report</button>
     </form>
     <div id="successMsg" class="success-msg hidden">
-      ✅ Report submitted! Your tracking ID: <strong id="trackingId"></strong>
+      <i class="fas fa-check-circle"></i> Report submitted! Your tracking ID: <strong id="trackingId"></strong>
     </div>
     <div id="matchesSection" class="matches-section hidden">
       <h3>🎯 Potential Matches Found!</h3>

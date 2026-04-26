@@ -124,7 +124,7 @@ function renderMyItems() {
 }
 
 function viewMatches(trackingId) {
-  window.location.href = `track.html?id=${trackingId}`;
+  window.location.href = `track.html?id=${trackingId}&matches=true`;
 }
 
 async function deleteItem(trackingId) {

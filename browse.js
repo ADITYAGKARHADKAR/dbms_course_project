@@ -41,27 +41,40 @@ function renderItems(list) {
       <p class="meta" style="margin-top:.4rem;font-size:.83rem">${item.description || 'No description'}</p>
       <p class="item-id">ID: ${item.tracking_id} · <span class="status-badge status-${item.status}">${item.status}</span></p>
       <button 
-        onclick="contactItemOwner('${item.contact_email}', '${item.item_name}', '${item.tracking_id}', '${item.item_type}')" 
-        style="margin-top: .5rem; width: 100%; background: #16a34a; color: white; border: none; padding: 0.5rem; border-radius: 6px; cursor: pointer; font-size: 0.85rem; font-weight: 600; transition: background .2s;"
-        onmouseover="this.style.background='#15803d'" 
-        onmouseout="this.style.background='#16a34a'">
-        📧 Contact Owner
+        onclick="contactItemOwner('${item.contact_email}', '${item.item_name}', '${item.tracking_id}')" 
+        style="margin-top: .5rem; width: 100%; background: #3b82f6; color: white; border: none; padding: 0.5rem; border-radius: 6px; cursor: pointer; font-size: 0.85rem; font-weight: 600; transition: background .2s;"
+        onmouseover="this.style.background='#1d4ed8'" 
+        onmouseout="this.style.background='#3b82f6'">
+        ✉️ Contact via Email
       </button>
     </div>
   `).join('');
 }
 
-function contactItemOwner(email, itemName, trackingId, itemType) {
-  const subject = encodeURIComponent(`Regarding ${itemType.toUpperCase()} Item: ${itemName} (${trackingId})`);
-  const body = encodeURIComponent(
-    `Hello,\n\n` +
-    `I saw your ${itemType} item report for "${itemName}" (Tracking ID: ${trackingId}).\n\n` +
-    `I would like to discuss this with you.\n\n` +
-    `Please let me know if this item is still available.\n\n` +
-    `Best regards`
-  );
-  
-  window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
+async function contactItemOwner(recipientEmail, itemName, trackingId) {
+  const senderName = prompt('Enter your name:');
+  if (!senderName) return;
+
+  const senderEmail = prompt('Enter your email address:');
+  if (!senderEmail) return;
+
+  const message = prompt('Enter your message (optional):') || '';
+
+  try {
+    const res = await fetch(`${API_URL}/contact/send`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ senderName, senderEmail, recipientEmail, itemName, message })
+    });
+    const data = await res.json();
+    if (res.ok) {
+      alert('Email sent successfully! The reporter will contact you back.');
+    } else {
+      alert(data.error || 'Failed to send email.');
+    }
+  } catch (err) {
+    alert('Failed to send email. Please try again.');
+  }
 }
 
 function filterItems() {
