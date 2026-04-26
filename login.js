@@ -1,4 +1,4 @@
-const API_URL = 'http://localhost:3000/api';
+const API_URL = '/api';
 
 function switchTab(tab) {
   document.getElementById('loginForm').classList.toggle('hidden', tab !== 'login');
