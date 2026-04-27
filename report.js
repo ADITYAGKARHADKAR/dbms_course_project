@@ -113,14 +113,14 @@ function displayLiveMatches(matches) {
                 📅 ${item.item_date.split('T')[0]} · ID: ${item.tracking_id}
               </div>
               <div style="font-size: 0.75rem; color: #2563eb; margin-top: 0.3rem;">
-                📱 ${item.contact_phone}
+                ✉️ ${item.contact_email}
               </div>
               <button 
-                onclick="contactOwner('${item.contact_phone}', '${item.item_name}', '${item.tracking_id}')" 
-                style="margin-top: 0.5rem; background: #16a34a; color: white; border: none; padding: 0.4rem 0.8rem; border-radius: 6px; cursor: pointer; font-size: 0.8rem; font-weight: 600;"
-                onmouseover="this.style.background='#15803d'" 
-                onmouseout="this.style.background='#16a34a'">
-                💬 WhatsApp Message
+                onclick="contactOwner('${item.contact_email}', '${item.item_name}', '${item.tracking_id}')" 
+                style="margin-top: 0.5rem; background: #3b82f6; color: white; border: none; padding: 0.4rem 0.8rem; border-radius: 6px; cursor: pointer; font-size: 0.8rem; font-weight: 600;"
+                onmouseover="this.style.background='#1d4ed8'" 
+                onmouseout="this.style.background='#3b82f6'">
+                ✉️ Contact via Email
               </button>
             </div>
             <div style="background: #3b82f6; color: white; padding: 0.25rem 0.5rem; border-radius: 12px; font-size: 0.7rem; font-weight: 600; white-space: nowrap; align-self: flex-start;">
@@ -145,11 +145,11 @@ function validate(id, errId, msg) {
   return true;
 }
 
-function validatePhone(id, errId) {
+function validateEmail(id, errId) {
   const val = document.getElementById(id).value.trim();
   const err = document.getElementById(errId);
-  if (!val) { err.textContent = 'Phone number is required.'; return false; }
-  if (!/^\+?[0-9\s\-()]{7,}$/.test(val)) { err.textContent = 'Enter a valid phone number.'; return false; }
+  if (!val) { err.textContent = 'Email is required.'; return false; }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val)) { err.textContent = 'Enter a valid email.'; return false; }
   err.textContent = '';
   return true;
 }
@@ -162,7 +162,7 @@ async function submitReport(e) {
     validate('location', 'locationErr', 'Location is required.'),
     validate('itemDate', 'dateErr', 'Date is required.'),
     validate('userName', 'userNameErr', 'Your name is required.'),
-    validatePhone('userPhone', 'phoneErr'),
+    validateEmail('userPhone', 'phoneErr'),
   ].every(Boolean);
 
   if (!ok) return;
@@ -174,7 +174,7 @@ async function submitReport(e) {
     location: document.getElementById('location').value.trim(),
     date: document.getElementById('itemDate').value,
     description: document.getElementById('description').value.trim(),
-    contactPhone: document.getElementById('userPhone').value.trim(),
+    contactEmail: document.getElementById('userPhone').value.trim(),
     userName: document.getElementById('userName').value.trim(),
   };
 
@@ -227,11 +227,11 @@ function displayMatches(matches) {
           <h4>${item.item_name}</h4>
           <p class="meta">📁 ${item.category} · 📍 ${item.location}</p>
           <p class="meta">📅 ${item.item_date} · ID: ${item.tracking_id}</p>
-          <p class="meta">📱 ${item.contact_phone}</p>
+          <p class="meta">✉️ ${item.contact_email}</p>
           <button 
-            onclick="contactOwner('${item.contact_phone}', '${item.item_name}', '${item.tracking_id}')" 
+            onclick="contactOwner('${item.contact_email}', '${item.item_name}', '${item.tracking_id}')" 
             class="btn-contact">
-            💬 WhatsApp Message
+            ✉️ Contact via Email
           </button>
         </div>
         <div class="match-score">${matchLabels.join(' + ') || 'Match'}</div>
@@ -241,28 +241,31 @@ function displayMatches(matches) {
   document.getElementById('matchesSection').classList.remove('hidden');
 }
 
-// Contact owner function - opens WhatsApp
-function contactOwner(phone, itemName, trackingId) {
-  const reportType = document.getElementById('reportType').value;
-  const yourName = document.getElementById('userName').value || 'Someone';
-  
-  // Format phone number for WhatsApp (remove all non-digit characters except +)
-  const cleanPhone = phone.replace(/[\s\-()]/g, '');
-  
-  const message = encodeURIComponent(
-    `🎉 YOUR PRODUCT FOUND! 🎉\n\n` +
-    `Hello,\n\n` +
-    `Good news! I found a match for your item!\n\n` +
-    `📦 Item: ${itemName}\n` +
-    `🔍 Tracking ID: ${trackingId}\n\n` +
-    `I saw your ${reportType === 'lost' ? 'found' : 'lost'} item report and I believe this might be the one you're looking for.\n\n` +
-    `Let's connect and verify! Could we discuss this further?\n\n` +
-    `Sent by: ${yourName}\n` +
-    `From: Lost & Found Portal`
-  );
-  
-  // Open WhatsApp Web
-  window.location.href = `https://wa.me/${cleanPhone}?text=${message}`;
+async function contactOwner(recipientEmail, itemName, trackingId) {
+  const senderName = document.getElementById('userName').value || prompt('Enter your name:');
+  if (!senderName) return;
+
+  const senderEmail = prompt('Enter your email address:');
+  if (!senderEmail) return;
+
+  const message = prompt('Enter your message (optional):') || '';
+
+  try {
+    const res = await fetch(`${API_URL}/contact/send`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ senderName, senderEmail, recipientEmail, itemName, message })
+    });
+    const data = await res.json();
+    if (res.ok) {
+      alert('Email sent successfully! The reporter will contact you back.');
+    } else {
+      alert(data.error || 'Failed to send email.');
+    }
+  } catch (err) {
+    alert('Failed to send email. Please try again.');
+  }
 }
 
 // Initialize

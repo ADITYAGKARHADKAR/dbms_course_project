@@ -405,12 +405,18 @@ app.post('/api/items/resolve', requireAuth, async (req, res) => {
     await db.query(`CREATE TABLE IF NOT EXISTS match_resolutions (
       match_id VARCHAR(255) NOT NULL,
       user_id INT NOT NULL,
+      item1_tracking_id VARCHAR(20) NOT NULL,
+      item2_tracking_id VARCHAR(20) NOT NULL,
       resolved_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-      PRIMARY KEY (match_id, user_id)
+      PRIMARY KEY (match_id, user_id),
+      FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
+      FOREIGN KEY (item1_tracking_id) REFERENCES item(tracking_id) ON DELETE CASCADE,
+      FOREIGN KEY (item2_tracking_id) REFERENCES item(tracking_id) ON DELETE CASCADE
     )`);
 
     const matchId = [myTrackingId, matchTrackingId].sort().join('_');
-    await db.query('INSERT IGNORE INTO match_resolutions (match_id, user_id) VALUES (?, ?)', [matchId, req.session.userId]);
+    const [sorted] = [[myTrackingId, matchTrackingId].sort()];
+    await db.query('INSERT IGNORE INTO match_resolutions (match_id, user_id, item1_tracking_id, item2_tracking_id) VALUES (?, ?, ?, ?)', [matchId, req.session.userId, sorted[0], sorted[1]]);
 
     const [resolves] = await db.query('SELECT COUNT(*) as cnt FROM match_resolutions WHERE match_id = ?', [matchId]);
     if (resolves[0].cnt >= 2) {

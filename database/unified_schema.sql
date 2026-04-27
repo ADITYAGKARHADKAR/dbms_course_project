@@ -251,6 +251,18 @@ CREATE INDEX idx_complaint_date ON complaint(complaint_date);
 CREATE INDEX idx_complaint_location ON complaint(location);
 CREATE INDEX idx_item_status_date ON item(status, status_change_date);
 
+CREATE TABLE IF NOT EXISTS match_resolutions (
+    match_id VARCHAR(255) NOT NULL,
+    user_id INT NOT NULL,
+    item1_tracking_id VARCHAR(20) NOT NULL,
+    item2_tracking_id VARCHAR(20) NOT NULL,
+    resolved_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (match_id, user_id),
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
+    FOREIGN KEY (item1_tracking_id) REFERENCES item(tracking_id) ON DELETE CASCADE,
+    FOREIGN KEY (item2_tracking_id) REFERENCES item(tracking_id) ON DELETE CASCADE
+);
+
 -- Display success message
 SELECT 'Database setup completed successfully!' as Status;
 SELECT COUNT(*) as 'Total Users' FROM users;
