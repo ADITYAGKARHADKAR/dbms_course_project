@@ -162,5 +162,18 @@
   <footer class="footer">
     <p>Build by College Students of Vishwakarma Institute of Technology,Pune</p>
   </footer>
+  <script>
+    async function checkAuth() {
+      try {
+        const res = await fetch('/api/auth/me', { credentials: 'include' });
+        if (res.ok) {
+          const data = await res.json();
+          document.querySelector('.btn-login').textContent = `👤 ${data.user.name}`;
+          document.querySelector('.btn-login').onclick = () => window.location.href = data.user.role === 'admin' ? 'admin.html' : 'profile.html';
+        }
+      } catch (err) {}
+    }
+    checkAuth();
+  </script>
 </body>
 </html>

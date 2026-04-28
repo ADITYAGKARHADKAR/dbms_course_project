@@ -310,6 +310,17 @@ app.get('/api/users/count', requireAuth, async (req, res) => {
   }
 });
 
+// Get all users (admin only)
+app.get('/api/users', requireAuth, async (req, res) => {
+  try {
+    if (req.session.userRole !== 'admin') return res.status(403).json({ error: 'Admin access required' });
+    const [users] = await db.query('SELECT user_id, user_name, phone_no, email, role, created_at FROM users ORDER BY created_at DESC');
+    res.json(users);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch users' });
+  }
+});
+
 // Get only user's items
 app.get('/api/items/my', requireAuth, async (req, res) => {
   try {

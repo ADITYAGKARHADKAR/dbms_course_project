@@ -176,4 +176,79 @@ async function logout() {
   }
 }
 
+function filterByCard(type) {
+  document.getElementById('searchInput').value = '';
+  document.getElementById('filterCategory').value = '';
+  document.getElementById('filterType').value = '';
+  document.getElementById('filterStatus').value = '';
+
+  let filtered;
+  let label;
+  if (type === 'all') {
+    filtered = allItems;
+    label = 'All Reports';
+  } else if (type === 'lost') {
+    filtered = allItems.filter(i => i.item_type === 'lost');
+    label = 'Lost Items';
+  } else if (type === 'found') {
+    filtered = allItems.filter(i => i.item_type === 'found');
+    label = 'Found Items';
+  } else if (type === 'pending') {
+    filtered = allItems.filter(i => i.status === 'pending');
+    label = 'Pending Items';
+  } else if (type === 'resolved') {
+    filtered = allItems.filter(i => i.status === 'resolved');
+    label = 'Resolved Items';
+  }
+
+  document.getElementById('gridTitle').textContent = label;
+  renderAdminItems(filtered);
+  document.getElementById('adminItemsGrid').scrollIntoView({ behavior: 'smooth' });
+}
+
+async function showUsers() {
+  try {
+    const res = await fetch(`${API_URL}/users`, { credentials: 'include' });
+    const users = await res.json();
+    const container = document.getElementById('usersTableContainer');
+    container.innerHTML = `
+      <table style="width:100%; border-collapse:collapse; font-size:0.9rem;">
+        <thead>
+          <tr style="background:#f3f4f6;">
+            <th style="padding:0.75rem; text-align:left; border-bottom:2px solid #e5e7eb;">#</th>
+            <th style="padding:0.75rem; text-align:left; border-bottom:2px solid #e5e7eb;">Name</th>
+            <th style="padding:0.75rem; text-align:left; border-bottom:2px solid #e5e7eb;">Email</th>
+            <th style="padding:0.75rem; text-align:left; border-bottom:2px solid #e5e7eb;">Phone</th>
+            <th style="padding:0.75rem; text-align:left; border-bottom:2px solid #e5e7eb;">Role</th>
+            <th style="padding:0.75rem; text-align:left; border-bottom:2px solid #e5e7eb;">Joined</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${users.map((u, i) => `
+            <tr style="border-bottom:1px solid #e5e7eb;">
+              <td style="padding:0.75rem;">${i + 1}</td>
+              <td style="padding:0.75rem; font-weight:600;">${u.user_name}</td>
+              <td style="padding:0.75rem;">${u.email}</td>
+              <td style="padding:0.75rem;">${u.phone_no}</td>
+              <td style="padding:0.75rem;">
+                <span style="background:${u.role === 'admin' ? '#fef3c7' : '#dbeafe'}; color:${u.role === 'admin' ? '#d97706' : '#1d4ed8'}; padding:0.25rem 0.75rem; border-radius:20px; font-size:0.8rem; font-weight:600;">
+                  ${u.role}
+                </span>
+              </td>
+              <td style="padding:0.75rem; color:#6b7280;">${new Date(u.created_at).toLocaleDateString()}</td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    `;
+    document.getElementById('usersModal').style.display = 'block';
+  } catch (err) {
+    alert('Failed to fetch users');
+  }
+}
+
+function closeUsers() {
+  document.getElementById('usersModal').style.display = 'none';
+}
+
 checkAuth();

@@ -212,7 +212,6 @@
       <div class="guide-card">
         <div class="team-member-icon" style="color: white; margin-bottom: 1rem;"><i class="fas fa-chalkboard-user"></i></div>
         <h3>Aparna Sawant</h3>
-        <p>Dean of Information Technology</p>
         <p>Guide & Mentor</p>
       </div>
     </div>
@@ -274,5 +273,18 @@
     <p>Build by Students of Vishwakarma Institute of Technology, Pune</p>
   </footer>
 
+  <script>
+    async function checkAuth() {
+      try {
+        const res = await fetch('/api/auth/me', { credentials: 'include' });
+        if (res.ok) {
+          const data = await res.json();
+          document.querySelector('.btn-login').textContent = `👤 ${data.user.name}`;
+          document.querySelector('.btn-login').onclick = () => window.location.href = data.user.role === 'admin' ? 'admin.html' : 'profile.html';
+        }
+      } catch (err) {}
+    }
+    checkAuth();
+  </script>
 </body>
 </html>
